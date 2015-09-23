@@ -1,3 +1,4 @@
+import timeit
 import numpy as np
 import scipy.misc as image
 import theano
@@ -15,7 +16,7 @@ def load_data(path,batch_size=25):
         return images[i * batch_size: (i+1) * batch_size]
     batches=map(get_batch,range(n_batches))
     batches = [np.array(batch) for batch in batches]
-    return batches
+    return np.array(batches)
 
 def get_number_of_batches(batch_size,n_images):
     n_batches=n_images / batch_size
@@ -29,25 +30,25 @@ class AutoEncoder(object):
         n_hidden=500,W=None,bhid=None,bvis=None):
         self.n_visible = n_visible
         self.n_hidden = n_hidden
-        self.init_rng(thean_rng)
+        self.init_rng(theano_rng)
         self.init_hidden_layer(W,bhid)
         self.init_visable_layer(bvis)
         self.init_input(input)
         self.params = [self.W, self.b, self.b_prime]
 
-    def init_rng(self,thean_rng):
-        self.numpy_rng = numpy.random.RandomState(123)
+    def init_rng(self,theano_rng):
+        self.numpy_rng = np.random.RandomState(123)
         if not theano_rng:
-            theano_rng=RandomStreams(numpy_rng.randint(2 ** 30))
+            theano_rng=RandomStreams(self.numpy_rng.randint(2 ** 30))
         self.theano_rng = theano_rng
 
     def init_hidden_layer(self,W,bhid):
         if not W:
             n_units=self.n_hidden + self.n_visible
-            initial_W = numpy.asarray(
+            initial_W = np.asarray(
                 self.numpy_rng.uniform(
-                    low=-4 * numpy.sqrt(6. / n_units),
-                    high=4 * numpy.sqrt(6. / n_units),
+                    low=-4 * np.sqrt(6. / n_units),
+                    high=4 * np.sqrt(6. / n_units),
                     size=(self.n_visible, self.n_hidden)
                 ),
                 dtype=theano.config.floatX
@@ -56,8 +57,8 @@ class AutoEncoder(object):
         self.W=W
         if not bhid:
             bhid = theano.shared(
-                value=numpy.zeros(
-                    n_hidden,
+                value=np.zeros(
+                    self.n_hidden,
                     dtype=theano.config.floatX
                 ),
                 name='b',
@@ -68,8 +69,8 @@ class AutoEncoder(object):
     def init_visable_layer(self,bvis):
 	if not bvis:
             bvis = theano.shared(
-                value=numpy.zeros(
-                    n_visible,
+                value=np.zeros(
+                    self.n_visible,
                     dtype=theano.config.floatX
                 ),
                 borrow=True
@@ -107,15 +108,16 @@ class AutoEncoder(object):
         ]
         return (cost, updates)
 
-def test_dA(learning_rate=0.1, training_epochs=15,
+def test_dA(path,learning_rate=0.1, training_epochs=15,
             batch_size=20):
 
-    datasets = load_data(dataset)
-    n_train_batches=len(datasets)
+    dataset = load_data(path)
+    n_train_batches=dataset.shape[0]
+    print(n_train_batches)
     index = T.lscalar()   
     x = T.matrix('x')  
 
-    da = AutoEncoder()
+    da = AutoEncoder(input=x)
 
     cost, updates = da.get_cost_updates(
         corruption_level=0.,
@@ -123,26 +125,26 @@ def test_dA(learning_rate=0.1, training_epochs=15,
     )
 
     train_da = theano.function(
-        [index],
+        [x],
         cost,
-        updates=updates,
-        givens={
-            x: dataset[index]
-        }
+        updates=updates#,
+        #givens={
+        #    x: 
+        #}
     )
 
     start_time = timeit.default_timer()
     for epoch in xrange(training_epochs):
         c = []
         for batch_index in xrange(n_train_batches):
-            c.append(train_da(batch_index))
+            c.append(train_da(dataset[batch_index]))
 
-        print 'Training epoch %d, cost ' % epoch, numpy.mean(c)
+        print 'Training epoch %d, cost ' % epoch, np.mean(c)
 
     end_time = timeit.default_timer()
 
     training_time = (end_time - start_time)
 
 if __name__ == "__main__":
-    in_path="/home/user/df/frames/"
-    load_data(in_path)
+    path="/home/user/df/frames/"
+    test_dA(path)
