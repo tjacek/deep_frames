@@ -1,3 +1,4 @@
+import pickle
 import os
 from os import listdir
 from os.path import isfile, join
@@ -19,3 +20,9 @@ def normalize(data):
     min_max_scaler = preprocessing.MinMaxScaler()
     data = min_max_scaler.fit_transform(data)
     return data
+
+def save_object(out_path,nn):
+    file_object = open(out_path,'wb')
+    pickle.dump(nn,file_object)
+    file_object.close()
+

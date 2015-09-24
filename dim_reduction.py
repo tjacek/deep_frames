@@ -109,10 +109,10 @@ class AutoEncoder(object):
         ]
         return (cost, updates)
 
-def test_dA(path,learning_rate=0.1, training_epochs=15,
-            batch_size=20):
+def test_dA(in_path,out_path,training_epochs=15,
+            learning_rate=0.1,batch_size=25):
 
-    dataset = load_data(path)
+    dataset = load_data(in_path,batch_size)
     print("Dataset loaded")
     n_train_batches=dataset.shape[0]
     index = T.lscalar()   
@@ -142,7 +142,9 @@ def test_dA(path,learning_rate=0.1, training_epochs=15,
     end_time = timeit.default_timer()
 
     training_time = (end_time - start_time)
+    utils.save_object(out_path,da)
 
 if __name__ == "__main__":
-    path="/home/user/df/frames/"
-    test_dA(path)
+    in_path="/home/user/df/frames/"
+    out_path="/home/user/df/ae"
+    test_dA(in_path,out_path,5)
