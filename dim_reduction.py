@@ -12,6 +12,7 @@ def load_data(path,batch_size=25):
     images=map(lambda f:image.imread(f),all_files)
     images=map(lambda img:np.reshape(img,(img.size)),images)
     n_batches=get_number_of_batches(batch_size,len(images))
+    images=utils.normalize(images)
     def get_batch(i):
         return images[i * batch_size: (i+1) * batch_size]
     batches=map(get_batch,range(n_batches))
@@ -112,8 +113,8 @@ def test_dA(path,learning_rate=0.1, training_epochs=15,
             batch_size=20):
 
     dataset = load_data(path)
+    print("Dataset loaded")
     n_train_batches=dataset.shape[0]
-    print(n_train_batches)
     index = T.lscalar()   
     x = T.matrix('x')  
 
@@ -127,10 +128,7 @@ def test_dA(path,learning_rate=0.1, training_epochs=15,
     train_da = theano.function(
         [x],
         cost,
-        updates=updates#,
-        #givens={
-        #    x: 
-        #}
+        updates=updates
     )
 
     start_time = timeit.default_timer()
