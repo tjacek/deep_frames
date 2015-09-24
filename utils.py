@@ -1,4 +1,4 @@
-import pickle
+import pickle,re
 import os
 from os import listdir
 from os.path import isfile, join
@@ -21,8 +21,35 @@ def normalize(data):
     data = min_max_scaler.fit_transform(data)
     return data
 
-def save_object(out_path,nn):
-    file_object = open(out_path,'wb')
+def save_string(path,string):
+    file_str = open(path,'w')
+    file_str.write(string)
+    file_str.close()
+
+def save_object(path,nn):
+    file_object = open(path,'wb')
     pickle.dump(nn,file_object)
     file_object.close()
 
+def read_object(path):
+    file_object = open(path,'r')
+    obj=pickle.load(file_object)  
+    file_object.close()
+    return obj
+
+def to_csv_file(path,vectors):
+    file_csv = open(path,'w')
+    csv=""
+    for i,instance in enumerate(vectors):
+        print(i)
+        str_v=vector_to_str(instance)
+        #file_csv.write(str_v)
+        csv+=str_v
+    file_csv.write(csv)
+    file_csv.close()
+
+def vector_to_str(vector):
+    v=str(vector).replace("[ ","")
+    v=re.sub("[\[\]]","",v)
+    v=re.sub(r"\s+", ',', v)+"\n"
+    return v#+"\n"
