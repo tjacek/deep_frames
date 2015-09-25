@@ -49,7 +49,16 @@ def to_csv_file(path,vectors):
     file_csv.close()
 
 def vector_to_str(vector):
-    v=str(vector).replace("[ ","")
+    v=str(vector).replace(" ]","")
+    v=re.sub(r"\s+", ',', v)
+    v=v.replace("[,","")
     v=re.sub("[\[\]]","",v)
-    v=re.sub(r"\s+", ',', v)+"\n"
-    return v#+"\n"
+    return v+"\n"
+
+def read_array(path):
+    arr=read_object(path)
+    arr=map(lambda x:x.flatten(),arr)
+    #arr=np.array(arr)
+    #size=arr.shape[0]
+    #dim=arr.shape[1]
+    return np.array(arr)#arr.reshape((size,dim))
