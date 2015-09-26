@@ -12,8 +12,16 @@ def get_all_files(path):
     all_files.sort()
     return all_files
 
+def get_all_dirs(path):
+    all_files= [ f for f in listdir(path) if not isfile(join(path,f)) ]
+    all_files.sort()
+    return all_files
+
 def append_path(path,files):
     return map(lambda f: path+f,files)
+
+def array_to_txt(array):
+    return reduce(lambda x,y:x+str(y),array,"")
 
 def normalize(data):
     if(isinstance(data,list)):
