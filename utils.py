@@ -3,6 +3,7 @@ import os
 from os import listdir
 from os.path import isfile, join
 import numpy as np
+import scipy.misc as image
 from sklearn import preprocessing
 
 def get_all_files(path):
@@ -43,7 +44,6 @@ def to_csv_file(path,vectors):
     for i,instance in enumerate(vectors):
         print(i)
         str_v=vector_to_str(instance)
-        #file_csv.write(str_v)
         csv+=str_v
     file_csv.write(csv)
     file_csv.close()
@@ -58,7 +58,10 @@ def vector_to_str(vector):
 def read_array(path):
     arr=read_object(path)
     arr=map(lambda x:x.flatten(),arr)
-    #arr=np.array(arr)
-    #size=arr.shape[0]
-    #dim=arr.shape[1]
-    return np.array(arr)#arr.reshape((size,dim))
+    return np.array(arr)
+
+def read_images(files):
+    return map(lambda f:image.imread(f),files)
+
+def flatten_images(images):
+    return map(lambda img:np.reshape(img,(img.size)),images)

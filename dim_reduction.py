@@ -1,6 +1,5 @@
 import timeit
 import numpy as np
-import scipy.misc as image
 import theano
 import theano.tensor as T
 from theano.tensor.shared_randomstreams import RandomStreams
@@ -9,8 +8,8 @@ import utils
 def load_data(path,batch_size=25):
     all_files=utils.get_all_files(path)
     all_files=utils.append_path(path,all_files)
-    images=map(lambda f:image.imread(f),all_files)
-    images=map(lambda img:np.reshape(img,(img.size)),images)
+    images=utils.read_images(all_files)
+    images=utils.flatten_images(images)
     n_batches=get_number_of_batches(batch_size,len(images))
     images=utils.normalize(images)
     def get_batch(i):
@@ -159,12 +158,12 @@ def apply_reduction(in_path,out_path,nn_path):
     print("convert to file")
     csv_dataset=utils.to_csv_file(out_path,projected)
     print("Save reduced dataset to file")
-    #utils.save_string(out_path,csv_dataset)
+    utils.save_object(out_path.replace(".cvs",".obj")+"_",projected)
 
 if __name__ == "__main__":
     path="/home/user/df/"
     images=path+"frames/"
     nn_path=path+"ae"
-    csv_path=path+"imgs.cvs"
+    csv_path=path+"imgs.csv"
     apply_reduction(images,csv_path,nn_path)
     #test_dA(in_path,out_path,100)
