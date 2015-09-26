@@ -36,6 +36,12 @@ def save_string(path,string):
     file_str.write(string)
     file_str.close()
 
+def read_file(path):
+    file_object = open(path,'r')
+    obj=file_object.readlines()  
+    file_object.close()
+    return obj
+
 def save_object(path,nn):
     file_object = open(path,'wb')
     pickle.dump(nn,file_object)
