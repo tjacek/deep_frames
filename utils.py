@@ -1,3 +1,4 @@
+import time
 import pickle,re
 import os
 from os import listdir
@@ -65,3 +66,8 @@ def read_images(files):
 
 def flatten_images(images):
     return map(lambda img:np.reshape(img,(img.size)),images)
+
+def show_images(imgs):
+    for img in imgs:
+        image.imshow(img)
+        time.sleep(1)

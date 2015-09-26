@@ -1,10 +1,15 @@
 import utils
 
 class Action(object):
-    def __init__(self,category,person,frames):
+    def __init__(self,category,person,frames,flat=True):
         self.category=category
         self.person=person
 	self.frames=frames
+        if(flat):
+            self.flatten()
+
+    def flatten(self):
+        self.frames=utils.flatten_images(self.frames)
 
 def read_action(action_path):
     action_name=get_action_name(action_path)
@@ -30,4 +35,4 @@ def get_person(action_name):
 
 if __name__ == "__main__":
    action_path="/home/user/df/actions/a01_s01_e01_sdepth"
-   read_action(action_path)
+   action=read_action(action_path)
