@@ -1,15 +1,28 @@
 import utils
+import numpy as np
 
 class Action(object):
     def __init__(self,category,person,frames,flat=True):
         self.category=category
         self.person=person
 	self.frames=frames
+        self.seq=range(len(frames))
         if(flat):
             self.flatten()
+            self.frames=utils.normalize(self.frames)
+            self.frames=map(lambda x:x.reshape(1,3000),self.frames)
 
     def flatten(self):
         self.frames=utils.flatten_images(self.frames)
+
+    def set_seq(self,assigment):
+        symbols="ABCDEFGHIJKLMNOPRSTUVWXYZ"
+        for i,cls in enumerate(assigment):
+            self.seq[i]=symbols[cls]
+
+    def __str__(self):
+        df=reduce(lambda x,y:x+str(y),self.seq,"")
+        return df+"$"+str(self.category)+"$"+str(self.person)
 
 def read_action(action_path):
     action_name=get_action_name(action_path)
