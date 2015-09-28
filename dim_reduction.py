@@ -1,14 +1,19 @@
 import numpy as np
 import utils 
-from reduction.autoencoder import AutoEncoder,AutoEncoderReduction
+from reduction.autoencoder import AutoEncoder,AutoEncoderReduction,learning_autoencoder
 
 def load_data(path,batch_size=25):
     all_files=utils.get_all_files(path)
     all_files=utils.append_path(path,all_files)
     images=utils.read_images(all_files)
     images=utils.flatten_images(images)
+    images=map(utils.normalize,images)
+    #print(len(images))
+    images=np.array(images)
     n_batches=get_number_of_batches(batch_size,len(images))
-    images=utils.normalize(images)
+    #images=utils.normalize(images)
+    print(np.amin(images))
+    print(np.amax(images))
     def get_batch(i):
         return images[i * batch_size: (i+1) * batch_size]
     batches=map(get_batch,range(n_batches))
@@ -22,22 +27,16 @@ def get_number_of_batches(batch_size,n_images):
         n_batches+=1
     return n_batches
 
-def test_dA(in_path,out_path,training_epochs=15,
+def train_autoencoder(in_path,out_path,training_epochs=15,
             learning_rate=0.1,batch_size=25):
     dataset = load_data(in_path,batch_size)
     da=learning_autoencoder(dataset,training_epochs,learning_rate,batch_size)
     utils.save_object(out_path,da)
 
-def apply_reduction(dataset,autoencoder):
-    x=autoencoder.x
-    eq=autoencoder.get_hidden_values(x)
-    dim_reduction = theano.function([x],eq)
-    projected=map(dim_reduction,dataset)
-    return projected
-
 def save_reduction(in_path,out_path,nn_path,csv=False):
     dataset=load_data(in_path,1)
     dataset=[inst for inst in dataset]
+    print(dataset[0].shape)
     autoencoder=AutoEncoderReduction(nn_path)
     projected=autoencoder.transform(dataset)
     print("Save to file") 
@@ -49,8 +48,8 @@ def save_reduction(in_path,out_path,nn_path,csv=False):
 
 if __name__ == "__main__":
     path="/home/user/df/"
-    images=path+"frames/"
-    nn_path=path+"ae"
-    csv_path=path+"imgs.csv"
-    save_reduction(images,csv_path,nn_path)
-    #test_dA(in_path,out_path,100)
+    in_path=path+"input/frames/"
+    nn_path=path+"exp1/nn"
+    nn_path=path+"exp1/vectors"
+    #save_reduction(in_path,out_path,nn_path)
+    train_autoencoder(in_path,nn_path,100)
