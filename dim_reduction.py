@@ -8,12 +8,8 @@ def load_data(path,batch_size=25):
     images=utils.read_images(all_files)
     images=utils.flatten_images(images)
     images=map(utils.normalize,images)
-    #print(len(images))
     images=np.array(images)
     n_batches=get_number_of_batches(batch_size,len(images))
-    #images=utils.normalize(images)
-    print(np.amin(images))
-    print(np.amax(images))
     def get_batch(i):
         return images[i * batch_size: (i+1) * batch_size]
     batches=map(get_batch,range(n_batches))
@@ -36,11 +32,10 @@ def train_autoencoder(in_path,out_path,training_epochs=15,
 def save_reduction(in_path,out_path,nn_path,csv=False):
     dataset=load_data(in_path,1)
     dataset=[inst for inst in dataset]
-    print(dataset[0].shape)
     autoencoder=AutoEncoderReduction(nn_path)
     projected=autoencoder.transform(dataset)
     print("Save to file") 
-    #utils.save_object(out_path,projected)
+    utils.save_object(out_path,projected)
     if(csv):
         print("Save to csv file") 
         csv_path=out_path.replace(".obj",".csv")
@@ -50,6 +45,6 @@ if __name__ == "__main__":
     path="/home/user/df/"
     in_path=path+"input/frames/"
     nn_path=path+"exp1/nn"
-    nn_path=path+"exp1/vectors"
-    #save_reduction(in_path,out_path,nn_path)
-    train_autoencoder(in_path,nn_path,100)
+    out_path=path+"exp1/vectors.obj"
+    save_reduction(in_path,out_path,nn_path)
+    #train_autoencoder(in_path,nn_path,100)
