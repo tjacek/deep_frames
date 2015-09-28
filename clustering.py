@@ -1,7 +1,9 @@
 import numpy as np
 import utils
+from dim_reduction import load_data
 from sklearn.cluster import MiniBatchKMeans
 from scipy.spatial import distance
+from dim_reduction import DfConf
 from time import time
 
 class Clusters(object):
@@ -32,6 +34,6 @@ def clustering_mini_batch(images,clusters=10):
     return mbk.cluster_centers_
  
 if __name__ == "__main__":
-    in_path="/home/user/df/imgs.obj"
-    out_path="/home/user/df/clust.obj"
-    cluster_images(in_path,out_path)
+    path="/home/user/df/exp2/"
+    conf=DfConf(path)
+    cluster_images(conf.vectors,conf.cls)

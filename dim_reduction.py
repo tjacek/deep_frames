@@ -1,6 +1,15 @@
+import sys
 import numpy as np
 import utils 
 from reduction.autoencoder import AutoEncoder,AutoEncoderReduction,learning_autoencoder
+
+class DfConf(object):
+    def __init__(self,path):
+        self.path=path
+        self.nn=path+"nn"
+        self.cls=path+"clust.obj"
+        self.seq=path+"dataset.seq"
+        self.vectors=path+"vectors.obj"
 
 def load_data(path,batch_size=25):
     all_files=utils.get_all_files(path)
@@ -44,7 +53,9 @@ def save_reduction(in_path,out_path,nn_path,csv=False):
 if __name__ == "__main__":
     path="/home/user/df/"
     in_path=path+"input/frames/"
-    nn_path=path+"exp1/nn"
-    out_path=path+"exp1/vectors.obj"
-    save_reduction(in_path,out_path,nn_path)
-    #train_autoencoder(in_path,nn_path,100)
+    exp_path=path+"exp2/"
+    conf=DfConf(exp_path)
+    if(len(sys.argv)>0):
+        save_reduction(in_path,conf.vectors,conf.nn)
+    else:
+        train_autoencoder(in_path,conf.nn,40)

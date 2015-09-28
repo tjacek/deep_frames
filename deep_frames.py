@@ -1,13 +1,15 @@
 #!/usr/bin/python
+import sys
 import utils
 from actions import read_action
 from clustering import Clusters
 from reduction.autoencoder import AutoEncoder,AutoEncoderReduction
+from dim_reduction import DfConf
 
-def create_seq_dataset(action_dir,nn_path,cls_path,out_path):
-    actions=get_actions(action_dir,nn_path,cls_path)
+def create_seq_dataset(action_dir,conf):
+    actions=get_actions(action_dir,conf.nn,conf.cls)
     seq_data=utils.array_to_txt(actions)
-    utils.save_string(out_path,seq_data)
+    utils.save_string(conf.seq,seq_data)
 
 def get_actions(action_dir,nn_path,cls_path):
     action_files=utils.get_all_dirs(action_dir)
@@ -44,17 +46,12 @@ def get_cluster(index,actions,out_path):
     for name,image in zip(names,cls):
         utils.save_image(name,image)
 
-class DfConf(object):
-    def __init__(self,path):
-        self.path=path
-        self.nn=path+"nn"
-        self.cls=path+"clust.obj"
-        self.seq=path+"dataset.seq"
-
 if __name__ == "__main__":
    action_path="/home/user/df/input/actions/"
-   exp_path="/home/user/df/exp1/"
+   exp_path="/home/user/df/exp2/"
    conf=DfConf(exp_path)
-   #create_seq_dataset(action_path,nn_path,cls_path,out_path)
-   show_path="/home/user/df/cls/"
-   get_all_clusters(action_path,conf,show_path)
+   if(len(sys.argv)>0):
+       create_seq_dataset(action_path,conf)
+   else:
+       show_path="/home/user/df/cls2/"
+       get_all_clusters(action_path,conf,show_path)
