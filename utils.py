@@ -6,6 +6,7 @@ from os.path import isfile, join
 import numpy as np
 import scipy.misc as image
 from sklearn import preprocessing
+import math
 
 #basic io functions
 def get_all_files(path):
@@ -57,7 +58,7 @@ def vector_to_str(vector):
     v=v.replace("[,","")
     v=re.sub("[\[\]]","",v)
     return v+"\n"
-
+    
 def get_filename(path):
     return path.split("/")[-1]
 #images
@@ -75,13 +76,32 @@ def show_images(imgs):
 def standarize_image(img):
     return np.reshape(img,(img.size))
 
+def save_image(imname,frame,dim=(50,60)):
+    frame=frame.reshape(dim)
+    image.imsave(imname,frame)
+
 #other
+def L2(x):
+    return math.sqrt(sum(i**2 for i in x)) 
+
 def normalize(data):
+    data=data.astype(float)
+    data=data/np.amax(data)
+    return data.flatten()
+
+def normalize_dataset(data):
     if(isinstance(data,list)):
         data=np.array(data)
     data=data.astype(float)
-    min_max_scaler = preprocessing.MinMaxScaler()
-    data = min_max_scaler.fit_transform(data)
+    data=np.transpose(data)
+    #min_max_scaler = preprocessing.MinMaxScaler()
+    #data = min_max_scaler.fit_transform(data)
+    print(data.shape)
+    
+    data=preprocessing.normalize(data,copy=False)
+    print(np.sum)
+    data=np.transpose(data)
+    print(np.linalg.norm(data[0]))
     return data
 
 def to_csv_file(path,vectors):
